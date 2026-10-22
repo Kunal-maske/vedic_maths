@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VedicSprint · Master Maths Faster</title>
+<style>
+/* ============================================================
+   RESET & GLOBAL
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  background: #f5f3ff;
+  color: #1e1b4b;
+  line-height: 1.5;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.app-container {
+  max-width: 1400px;
+  width: 100%;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 28px;
+  padding: 28px 16px;
+  box-shadow: 0 12px 30px rgba(99, 102, 241, .12);
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  border: 1px solid #ede9fe;
+}
+
+.logo-area { padding: 0 10px 24px; border-bottom: 1px solid #ede9fe; margin-bottom: 20px; }
+.logo { font-size: 1.8rem; font-weight: 800; letter-spacing: -.5px; color: #4f46e5; line-height: 1.1; }
+.logo-sub { font-size: .85rem; color: #6b7280; font-weight: 500; margin-top: 2px; }
+
+.lesson-list { display: flex; flex-direction: column; gap: 10px; }
+
+.lesson-item {
+  display: flex; align-items: center; padding: 14px 16px;
+  border-radius: 18px; background: #fff; border: 2px solid transparent;
+  cursor: pointer; transition: all .2s ease; gap: 12px;
+}
+.lesson-item:hover { background: #f1f0fe; }
+.lesson-item.active { background: #eef2ff; border-color: #6366f1; box-shadow: 0 4px 12px rgba(99,102,241,.15); }
+
+.lesson-number {
+  background: #e0e7ff; color: #4f46e5; font-weight: 700;
+  width: 30px; height: 30px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem; flex-shrink: 0;
+}
+.lesson-item.active .lesson-number { background: #4f46e5; color: #fff; }
+
+.lesson-info { flex: 1; min-width: 0; }
+.lesson-name { font-weight: 700; font-size: .92rem; color: #1e1b4b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lesson-topic { font-size: .7rem; color: #6b7280; font-weight: 500; text-transform: uppercase; letter-spacing: .3px; }
+
+.check-badge { color: #10b981; font-weight: 700; font-size: 1.2rem; margin-left: 4px; }
+.check-badge.hidden { visibility: hidden; }
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.main { flex: 1; min-width: 0; }
+
+.dashboard-header {
+  background: #fff; border-radius: 28px; padding: 28px 32px; margin-bottom: 24px;
+  box-shadow: 0 12px 30px rgba(99,102,241,.08); border: 1px solid #ede9fe;
+}
+.dashboard-header h1 { font-size: 2rem; font-weight: 800; color: #1e1b4b; letter-spacing: -.5px; }
+.dashboard-header p { color: #6b7280; font-size: 1rem; margin-top: 4px; font-weight: 500; }
+
+.progress-section { display: flex; align-items: center; gap: 20px; margin-top: 18px; flex-wrap: wrap; }
+.progress-label { font-weight: 700; font-size: .95rem; color: #4f46e5; white-space: nowrap; }
+.progress-bar-bg { flex: 1; min-width: 140px; height: 12px; background: #e0e7ff; border-radius: 20px; overflow: hidden; }
+.progress-bar-fill { height: 100%; width: 0%; background: #4f46e5; border-radius: 20px; transition: width .4s ease; }
+
+.lesson-card {
+  background: #fff; border-radius: 28px; padding: 32px;
+  box-shadow: 0 12px 30px rgba(99,102,241,.08); border: 1px solid #ede9fe;
+}
+.lesson-card h2 { font-size: 1.6rem; font-weight: 800; color: #1e1b4b; margin-bottom: 6px; }
+
+.lesson-badge {
+  display: inline-block; background: #eef2ff; color: #4f46e5;
+  padding: 4px 12px; border-radius: 100px; font-size: .8rem; font-weight: 700; margin-bottom: 12px;
+}
+.lesson-desc { color: #4b5563; font-size: 1rem; margin: 16px 0 20px; line-height: 1.6; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  border: none; font-family: inherit; font-weight: 700; font-size: 1rem;
+  padding: 14px 32px; border-radius: 18px; cursor: pointer;
+  transition: all .2s ease; display: inline-flex; align-items: center;
+  justify-content: center; gap: 8px;
+}
+.btn-primary { background: #4f46e5; color: #fff; box-shadow: 0 6px 14px rgba(79,70,229,.3); }
+.btn-primary:hover { background: #4338ca; transform: translateY(-1px); box-shadow: 0 8px 18px rgba(79,70,229,.4); }
+.btn-secondary { background: #f1f0fe; color: #4f46e5; }
+.btn-secondary:hover { background: #e0e7ff; }
+.btn-success { background: #10b981; color: #fff; box-shadow: 0 6px 14px rgba(16,185,129,.3); }
+.btn-success:hover { background: #059669; }
+.btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ============================================================
+   CHALLENGE
+   ============================================================ */
+.challenge-area { margin-top: 24px; background: #fff; border-radius: 24px; padding: 28px; border: 1px solid #ede9fe; }
+
+.timer-display {
+  font-size: 2.2rem; font-weight: 800; color: #4f46e5;
+  font-variant-numeric: tabular-nums; letter-spacing: 1px; margin-bottom: 12px;
+}
+.question-display {
+  font-size: 2.6rem; font-weight: 800; color: #1e1b4b;
+  margin: 20px 0 24px; letter-spacing: 1px;
+}
+.answer-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+.answer-input {
+  font-family: inherit; font-size: 1.4rem; font-weight: 700;
+  padding: 14px 20px; border: 2px solid #e0e7ff; border-radius: 18px;
+  width: 220px; outline: none; transition: border-color .2s; color: #1e1b4b;
+}
+.answer-input:focus { border-color: #4f46e5; }
+
+.feedback { margin-top: 18px; font-weight: 600; font-size: 1.05rem; }
+.feedback.error { color: #dc2626; }
+.feedback.success { color: #10b981; }
+.feedback.hint { color: #f59e0b; }
+
+/* ============================================================
+   STEP CONTAINER
+   ============================================================ */
+.steps-container { margin-top: 20px; }
+
+.step-card {
+  background: #faf9ff; border-radius: 20px; padding: 24px;
+  border: 1px solid #e0e7ff; margin-bottom: 16px;
+  animation: stepIn .38s ease both;
+}
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-counter {
+  font-weight: 700; color: #6b7280; font-size: .8rem;
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px;
+}
+.step-content { font-size: 1.5rem; font-weight: 700; color: #1e1b4b; line-height: 2.2; }
+
+.nav-steps { display: flex; gap: 12px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
+
+.full-steps { max-height: 540px; overflow-y: auto; padding-right: 6px; margin-top: 16px; }
+
+/* ============================================================
+   ★ VISUAL EXPLANATION COMPONENTS ★
+   ============================================================ */
+.viz {
+  background: #fff;
+  border-radius: 18px;
+  padding: 26px 16px 20px;
+  margin: 4px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #eef2ff;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.6);
+  overflow: hidden;
+}
+
+.viz-row { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+.viz-caption {
+  font-size: .95rem; color: #4b5563; text-align: center;
+  line-height: 1.65; max-width: 480px;
+}
+.viz-caption strong { color: #4f46e5; font-weight: 800; }
+
+/* digit boxes */
+.digit-box {
+  min-width: 56px; height: 56px; padding: 0 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.7rem; font-weight: 800;
+  border-radius: 14px;
+  background: #f1f0fe; color: #4f46e5;
+  border: 2px solid #e0e7ff;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.digit-box.wide { min-width: auto; padding: 0 16px; }
+
+.digit-box.hl-blue  { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+.digit-box.hl-green { background: #d1fae5; border-color: #10b981; color: #065f46; }
+.digit-box.hl-amber { background: #fef3c7; border-color: #f59e0b; color: #b45309; }
+
+.digit-box.answer-box {
+  background: #4f46e5; color: #fff; border-color: #4338ca;
+  font-size: 2rem; padding: 0 26px; min-width: auto;
+  box-shadow: 0 8px 20px rgba(79,70,229,.35);
+}
+
+.op { font-size: 1.6rem; font-weight: 800; color: #9ca3af; }
+
+/* ---- generic animations ---- */
+.pop { opacity: 0; animation: popIn .5s cubic-bezier(.2,1.5,.45,1) forwards; }
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(.35); }
+  70%  { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.slide-right { opacity: 0; animation: slideRight .5s cubic-bezier(.2,1.2,.4,1) forwards; }
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-38px) scale(.85); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+.drop-in { opacity: 0; animation: dropIn .45s cubic-bezier(.2,1.3,.4,1) forwards; }
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.final-pop { animation: finalPop .55s cubic-bezier(.2,1.4,.45,1) both, glowPulse 1.8s ease-out .55s 3; }
+@keyframes finalPop {
+  0%   { opacity: 0; transform: scale(.5); }
+  65%  { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79,70,229,.45); }
+  50%      { box-shadow: 0 0 0 16px rgba(79,70,229,0); }
+}
+
+/* ---- Nikhilam helpers ---- */
+.nik-row { display: flex; align-items: center; gap: 12px; }
+.nik-arrow { color: #9ca3af; font-size: 1.15rem; font-weight: 800; }
+
+.deficit-chip {
+  background: #fef3c7; color: #b45309; border: 2px solid #fcd34d;
+  border-radius: 12px; padding: 6px 16px; font-weight: 800; font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.combine-bar { width: 4px; height: 46px; background: #c7d2fe; border-radius: 4px; }
+
+/* ---- Urdhva cross grid ---- */
+.cross-grid {
+  position: relative;
+  width: 146px;
+  height: 146px;
+  margin: 4px auto;
+  display: grid;
+  grid-template-columns: 56px 56px;
+  grid-template-rows: 56px 56px;
+  gap: 34px;
+  justify-content: center;
+}
+.cross-grid .digit-box {
+  width: 56px; min-width: 56px; height: 56px; padding: 0;
+  position: relative; z-index: 2;
+  font-size: 1.7rem;
+}
+
+/* connecting lines */
+.cline {
+  position: absolute;
+  background: #4f46e5;
+  border-radius: 4px;
+  z-index: 1;
+  animation-duration: .55s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  opacity: .9;
+}
+.cline-v { width: 4px; transform-origin: top center; animation-name: drawVert; }
+@keyframes drawVert {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+.cline-d { height: 4px; transform-origin: left center; animation-name: drawDiag; }
+@keyframes drawDiag {
+  from { transform: rotate(var(--rot)) scaleX(0); }
+  to   { transform: rotate(var(--rot)) scaleX(1); }
+}
+
+/* ============================================================
+   COMPARISON
+   ============================================================ */
+.comparison-card { background: #fff; border-radius: 24px; padding: 32px; border: 1px solid #ede9fe; }
+
+.comparison-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; }
+.stat-box { background: #faf9ff; border-radius: 18px; padding: 20px; border: 1px solid #e0e7ff; }
+.stat-box .label { font-size: .85rem; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.stat-box .value { font-size: 2rem; font-weight: 800; color: #4f46e5; margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+.bar-chart { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+.bar-row { display: flex; align-items: center; gap: 12px; }
+.bar-label { width: 70px; font-weight: 700; font-size: .9rem; color: #4b5563; }
+.bar-bg { flex: 1; height: 36px; background: #f1f0fe; border-radius: 12px; overflow: hidden; }
+.bar-fill {
+  height: 100%; border-radius: 12px; transition: width .7s ease;
+  display: flex; align-items: center; padding-left: 14px;
+  font-weight: 700; font-size: .9rem; color: #fff;
+}
+.bar-fill.normal { background: #94a3b8; }
+.bar-fill.vedic { background: #10b981; }
+
+.motivation { font-size: 1.1rem; font-weight: 600; color: #4f46e5; text-align: center; margin: 20px 0; }
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.hidden { display: none !important; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .app-container { flex-direction: column; }
+  .sidebar { width: 100%; position: static; padding: 20px; }
+  .lesson-list { flex-direction: row; overflow-x: auto; gap: 10px; }
+  .lesson-item { min-width: 200px; }
+}
+
+@media (max-width: 600px) {
+  body { padding: 12px; }
+  .dashboard-header { padding: 20px; }
+  .dashboard-header h1 { font-size: 1.5rem; }
+  .lesson-card, .challenge-area { padding: 20px; }
+  .question-display { font-size: 1.8rem; }
+  .answer-input { width: 100%; }
+  .comparison-stats { grid-template-columns: 1fr; }
+  .btn { padding: 12px 24px; font-size: .95rem; }
+  .digit-box { min-width: 46px; height: 46px; font-size: 1.4rem; padding: 0 8px; }
+  .digit-box.answer-box { font-size: 1.6rem; padding: 0 18px; }
+  .viz { padding: 20px 8px 16px; }
+  .cross-grid { transform: scale(.88); }
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo">VedicSprint</div>
+      <div class="logo-sub">Master Maths, Faster</div>
+    </div>
+    <nav class="lesson-list" id="lessonList"></nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="dashboard-header">
+      <h1>Your Vedic Maths Journey</h1>
+      <p>Learn the trick. Beat your time. Master Vedic Maths.</p>
+      <div class="progress-section">
+        <span class="progress-label" id="progressText">0 / 3 completed</span>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div id="lessonContent"></div>
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   1. STATE
+   ============================================================ */
+let currentLessonId = 1;
+let lessonCompleted = { 1: false, 2: false, 3: false };
+let timerInterval = null;
+let startTime = 0;
+let elapsedTime = 0;
+let currentQuestion = null;
+let normalAttemptTime = null;
+let vedicAttemptTime = null;
+let normalAttempts = 0;
+let vedicAttempts = 0;
+let vedicStepIndex = 0;
+let vedicSteps = [];
+
+/* ============================================================
+   2. LESSON DEFINITIONS
+   ============================================================ */
+const LESSONS = {
+  1: {
+    id: 1,
+    name: 'Ekadhikena Purvena',
+    topic: 'Squares ending in 5',
+    description: 'Multiply numbers ending in 5 by themselves. Multiply the first digit by the next integer, then append 25.',
+    example: '35 × 35 = 1225',
+    questionGenerator: generateLesson1Question,
+    stepBuilder: buildLesson1Steps
+  },
+  2: {
+    id: 2,
+    name: 'Nikhilam Navatashcaramam Dashatah',
+    topic: 'Multiply close to 100',
+    description: 'Multiply numbers near 100. Find the deficits from 100, cross-subtract for the left half, multiply the deficits for the right half.',
+    example: '98 × 97 = 9506',
+    questionGenerator: generateLesson2Question,
+    stepBuilder: buildLesson2Steps
+  },
+  3: {
+    id: 3,
+    name: 'Urdhva Tiryagbhyam',
+    topic: 'Vertical & crosswise multiplication',
+    description: 'Multiply two-digit numbers digit by digit: rightmost, then crosswise, then leftmost. No carrying in this beginner version.',
+    example: '12 × 13 = 156',
+    questionGenerator: generateLesson3Question,
+    stepBuilder: buildLesson3Steps
+  }
+};
+
+/* ============================================================
+   3. QUESTION GENERATORS
+   ============================================================ */
+function generateLesson1Question() {
+  const candidates = [15, 25, 35, 45, 65, 75, 85, 95];
+  const n = candidates[Math.floor(Math.random() * candidates.length)];
+  return { a: n, b: n, answer: n * n, type: 1 };
+}
+
+function generateLesson2Question() {
+  let a, b;
+  do {
+    a = 91 + Math.floor(Math.random() * 9); // 91..99
+    b = 91 + Math.floor(Math.random() * 9);
+  } while (a === b);
+  return { a, b, answer: a * b, type: 2 };
+}
+
+function generateLesson3Question() {
+  let a, b, tries = 0;
+  do {
+    a = 11 + Math.floor(Math.random() * 14); // 11..24
+    b = 11 + Math.floor(Math.random() * 14);
+    tries++;
+  } while (tries < 400 && !isValidLesson3(a, b));
+  return { a, b, answer: a * b, type: 3 };
+}
+
+/* Two-digit × two-digit with NO carrying in any intermediate step */
+function isValidLesson3(a, b) {
+  const a1 = Math.floor(a / 10), a2 = a % 10;
+  const b1 = Math.floor(b / 10), b2 = b % 10;
+  const right = a2 * b2;
+  const cross = a1 * b2 + a2 * b1;
+  const left  = a1 * b1;
+  return right < 10 && cross < 10 && left < 10;
+}
+
+/* ============================================================
+   4. VISUAL HELPERS
+   ============================================================ */
+function dbox(digit, cls, delay) {
+  const delayStyle = delay ? ` style="animation-delay:${delay}s"` : '';
+  const clsAttr = cls ? ` ${cls}` : '';
+  return `<div class="digit-box wide${clsAttr} pop"${delayStyle}>${digit}</div>`;
+}
+
+/* Build one digit cell of the Urdhva grid */
+function gbox(digit, hl) {
+  if (hl === 'dim') {
+    return `<div class="digit-box" style="opacity:.32">${digit}</div>`;
+  }
+  const cls = hl ? ` hl-${hl}` : '';
+  return `<div class="digit-box pop${cls}">${digit}</div>`;
+}
+
+/* Vertical connector between the two grid rows.
+   x = horizontal centre of the column (28 or 118). */
+function vline(x, delay) {
+  return `<div class="cline cline-v"
+            style="left:${x - 2}px; top:28px; height:90px; animation-delay:${delay}s"></div>`;
+}
+
+/* Diagonal connector across the grid.
+   x = start x (28 = left column, 118 = right column). */
+function dline(x, rot, delay) {
+  return `<div class="cline cline-d"
+            style="left:${x}px; top:28px; width:127.3px; --rot:${rot}deg;
+                   animation-delay:${delay}s"></div>`;
+}
+
+/* ============================================================
+   5. LESSON 1 — VISUAL STEPS
+      n × n  →  (first digit × next integer) then append 25
+   ============================================================ */
+function buildLesson1Steps(a, b, answer) {
+  const n = a;
+  const d1 = Math.floor(n / 10);   // 3
+  const d2 = n % 10;               // 5
+  const next = d1 + 1;             // 4
+  const prod = d1 * next;          // 12
+  const steps = [];
+
+  /* --- Step 1: split the digits --- */
+  steps.push(`
+    <div class="viz">
+      <div class="viz-row">
+        ${dbox(d1, 'hl-blue', .05)}
+        ${dbox(d2, 'hl-amber', .22)}
+        <div class="op pop" style="animation-delay:.38s">×</div>
+        ${dbox(d1, 'hl-blue', .52)}
+        ${dbox(d2, 'hl-amber', .68)}
+      </div>
+      <p class="viz-caption">
+        Both numbers are <strong>${n}</strong>.
+        Split each one into a first digit <strong>${d1}</strong>
+        and a last digit <strong>${d2}</strong>.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 2: first digit × next integer --- */
+  steps.push(`
+    <div class="viz">
+      <div class="viz-row">
+        ${dbox(d1, 'hl-blue', .05)}
+        <div class="op pop" style="animation-delay:.18s">×</div>
+        ${dbox(next, 'hl-green', .32)}
+        <div class="op pop" style="animation-delay:.52s">=</div>
+        ${dbox(prod, 'hl-amber', .70)}
+      </div>
+      <p class="viz-caption">
+        Multiply the first digit <strong>${d1}</strong> by the
+        <em>next</em> integer <strong>${next}</strong>
+        (because ${d1} + 1 = ${next}).
+        Result: <strong>${d1} × ${next} = ${prod}</strong>.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 3: append 25 --- */
+  steps.push(`
+    <div class="viz">
+      <div class="viz-row">
+        ${dbox(prod, 'hl-amber', .05)}
+        <div class="op pop" style="animation-delay:.22s">|</div>
+        <div class="digit-box wide hl-green slide-right" style="animation-delay:.40s">25</div>
+      </div>
+      <p class="viz-caption">
+        Now append <strong>25</strong> to the right — for any number ending
+        in 5, the last two digits of the square are always <strong>25</strong>.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 4: the answer --- */
+  steps.push(`
+    <div class="viz">
+      <div class="viz-row">
+        <div class="digit-box wide answer-box final-pop" style="animation-delay:.12s">${answer}</div>
+      </div>
+      <p class="viz-caption">
+        <strong>${n} × ${n} = ${answer}</strong> — done mentally in seconds!
+      </p>
+    </div>
+  `);
+
+  return steps;
+}
+
+/* ============================================================
+   6. LESSON 2 — VISUAL STEPS
+      a × b near 100 → cross-subtract | multiply deficits
+   ============================================================ */
+function buildLesson2Steps(a, b, answer) {
+  const da = 100 - a;
+  const db = 100 - b;
+  const left = a - db;
+  const right = da * db;
+  const rightPad = String(right).padStart(2, '0');
+  const steps = [];
+
+  /* --- Step 1: find the deficits --- */
+  steps.push(`
+    <div class="viz">
+      <div class="nik-row">
+        ${dbox(a, '', .05)}
+        <div class="nik-arrow drop-in" style="animation-delay:.30s">→</div>
+        <div class="deficit-chip drop-in" style="animation-delay:.45s">−${da}</div>
+      </div>
+      <div class="nik-row">
+        ${dbox(b, '', .18)}
+        <div class="nik-arrow drop-in" style="animation-delay:.55s">→</div>
+        <div class="deficit-chip drop-in" style="animation-delay:.70s">−${db}</div>
+      </div>
+      <p class="viz-caption">
+        Both numbers sit just below the base <strong>100</strong>.
+        Their deficits are <strong>100 − ${a} = ${da}</strong>
+        and <strong>100 − ${b} = ${db}</strong>.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 2: cross-subtraction (left half) --- */
+  steps.push(`
+    <div class="viz">
+      <div class="viz-row">
+        ${dbox(a, '', .05)}
+        <div class="op pop" style="animation-delay:.18s">−</div>
+        ${dbox(db, 'hl-amber', .32)}
+        <div class="op pop" style="animation-delay:.55s">=</div>
+        ${dbox(left, 'hl-green', .75)}
+      </div>
+      <p class="viz-caption">
+        Cross-subtract: <strong>${a} − ${db} = ${left}</strong>.
+        (The other diagonal gives the same answer:
+        <strong>${b} − ${da} = ${left}</strong>.)
+        This is the <strong>left half</strong>.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 3: multiply the deficits (right half) --- */
+  steps.push(`
+    <div class="viz">
+      <div class="viz-row">
+        ${dbox(da, 'hl-amber', .05)}
+        <div class="op pop" style="animation-delay:.18s">×</div>
+        ${dbox(db, 'hl-amber', .32)}
+        <div class="op pop" style="animation-delay:.55s">=</div>
+        ${dbox(rightPad, 'hl-green', .75)}
+      </div>
+      <p class="viz-caption">
+        Multiply the deficits: <strong>${da} × ${db} = ${right}</strong>.
+        Because the base is 100, the right half must have
+        <strong>exactly two digits</strong> — so write it as
+        <strong>${rightPad}</strong>.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 4: combine the halves --- */
+  steps.push(`
+    <div class="viz">
+      <div class="viz-row">
+        ${dbox(left, 'hl-green', .05)}
+        <div class="combine-bar pop" style="animation-delay:.30s"></div>
+        ${dbox(rightPad, 'hl-amber', .42)}
+      </div>
+      <div class="viz-row" style="margin-top:12px;">
+        <div class="digit-box wide answer-box final-pop" style="animation-delay:.85s">${answer}</div>
+      </div>
+      <p class="viz-caption">
+        Join the two halves: <strong>${left} | ${rightPad} = ${answer}</strong>.
+      </p>
+    </div>
+  `);
+
+  return steps;
+}
+
+/* ============================================================
+   7. LESSON 3 — VISUAL STEPS (Urdhva Tiryagbhyam)
+      Right → Crosswise → Left, with animated connectors
+   ============================================================ */
+function buildLesson3Steps(a, b, answer) {
+  const a1 = Math.floor(a / 10), a2 = a % 10;
+  const b1 = Math.floor(b / 10), b2 = b % 10;
+  const right = a2 * b2;
+  const cross = a1 * b2 + a2 * b1;
+  const left  = a1 * b1;
+  const steps = [];
+
+  /* --- Step 1: lay out the digits --- */
+  steps.push(`
+    <div class="viz">
+      <div class="cross-grid">
+        ${gbox(a1, '')}${gbox(a2, '')}${gbox(b1, '')}${gbox(b2, '')}
+      </div>
+      <p class="viz-caption">
+        Write <strong>${a}</strong> across the top row and
+        <strong>${b}</strong> across the bottom row.
+        Now multiply them using three simple moves.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 2: rightmost digits (vertical) --- */
+  steps.push(`
+    <div class="viz">
+      <div class="cross-grid">
+        ${gbox(a1, 'dim')}${gbox(a2, 'green')}${gbox(b1, 'dim')}${gbox(b2, 'green')}
+        ${vline(118, .45)}
+      </div>
+      <div class="viz-row" style="margin-top:10px;">
+        ${dbox(right, 'hl-green', .70)}
+      </div>
+      <p class="viz-caption">
+        <strong>Move 1 — rightmost digits:</strong>
+        <strong>${a2} × ${b2} = ${right}</strong>.
+        This becomes the rightmost digit of the answer.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 3: crosswise (both diagonals) --- */
+  steps.push(`
+    <div class="viz">
+      <div class="cross-grid">
+        ${gbox(a1, 'blue')}${gbox(a2, 'amber')}${gbox(b1, 'amber')}${gbox(b2, 'blue')}
+        ${dline(28, 45, .45)}
+        ${dline(118, 135, .70)}
+      </div>
+      <div class="viz-row" style="margin-top:10px;">
+        ${dbox(cross, 'hl-blue', 1.05)}
+      </div>
+      <p class="viz-caption">
+        <strong>Move 2 — crosswise:</strong>
+        <strong>${a1} × ${b2} + ${a2} × ${b1} = ${a1 * b2} + ${a2 * b1} = ${cross}</strong>.
+        This is the middle digit.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 4: leftmost digits (vertical) --- */
+  steps.push(`
+    <div class="viz">
+      <div class="cross-grid">
+        ${gbox(a1, 'green')}${gbox(a2, 'dim')}${gbox(b1, 'green')}${gbox(b2, 'dim')}
+        ${vline(28, .45)}
+      </div>
+      <div class="viz-row" style="margin-top:10px;">
+        ${dbox(left, 'hl-green', .70)}
+      </div>
+      <p class="viz-caption">
+        <strong>Move 3 — leftmost digits:</strong>
+        <strong>${a1} × ${b1} = ${left}</strong>.
+        This is the leftmost digit.
+      </p>
+    </div>
+  `);
+
+  /* --- Step 5: combine --- */
+  steps.push(`
+    <div class="viz">
+      <div class="viz-row">
+        ${dbox(left, 'hl-green', .05)}
+        ${dbox(cross, 'hl-blue', .30)}
+        ${dbox(right, 'hl-amber', .55)}
+      </div>
+      <div class="viz-row" style="margin-top:12px;">
+        <div class="digit-box wide answer-box final-pop" style="animation-delay:.95s">${answer}</div>
+      </div>
+      <p class="viz-caption">
+        Read the three results left to right:
+        <strong>${left} | ${cross} | ${right} = ${answer}</strong>.
+      </p>
+    </div>
+  `);
+
+  return steps;
+}
+
+/* ============================================================
+   8. TIMER
+   ============================================================ */
+function startTimer() {
+  stopTimer();
+  startTime = performance.now();
+  elapsedTime = 0;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    elapsedTime = (performance.now() - startTime) / 1000;
+    updateTimerDisplay();
+  }, 50);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  if (startTime > 0) {
+    elapsedTime = (performance.now() - startTime) / 1000;
+    startTime = 0;
+  }
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timerDisplay');
+  if (el) el.textContent = elapsedTime.toFixed(2) + 's';
+}
+
+/* ============================================================
+   9. SIDEBAR & PROGRESS
+   ============================================================ */
+function renderSidebar() {
+  const nav = document.getElementById('lessonList');
+  nav.innerHTML = '';
+  for (let id = 1; id <= 3; id++) {
+    const lesson = LESSONS[id];
+    const isActive = id === currentLessonId;
+    const isDone = lessonCompleted[id];
+    const item = document.createElement('div');
+    item.className = 'lesson-item' + (isActive ? ' active' : '');
+    item.innerHTML = `
+      <div class="lesson-number">${id}</div>
+      <div class="lesson-info">
+        <div class="lesson-name">${lesson.name}</div>
+        <div class="lesson-topic">${lesson.topic}</div>
+      </div>
+      <span class="check-badge ${isDone ? '' : 'hidden'}">✓</span>
+    `;
+    item.addEventListener('click', () => selectLesson(id));
+    nav.appendChild(item);
+  }
+}
+
+function updateProgress() {
+  const count = Object.values(lessonCompleted).filter(Boolean).length;
+  document.getElementById('progressBar').style.width = (count / 3) * 100 + '%';
+  document.getElementById('progressText').textContent = `${count} / 3 completed`;
+}
+
+function saveCompletion() {
+  try { localStorage.setItem('vedicSprintCompleted', JSON.stringify(lessonCompleted)); } catch (e) {}
+}
+
+function loadCompletion() {
+  try {
+    const saved = localStorage.getItem('vedicSprintCompleted');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      for (let i = 1; i <= 3; i++) lessonCompleted[i] = !!parsed[i];
+    }
+  } catch (e) {}
+}
+
+/* ============================================================
+   10. LESSON SELECTION & DASHBOARD
+   ============================================================ */
+function selectLesson(id) {
+  stopTimer();
+  currentLessonId = id;
+  normalAttemptTime = null;
+  vedicAttemptTime = null;
+  normalAttempts = 0;
+  vedicAttempts = 0;
+  renderSidebar();
+  renderLessonView();
+  updateProgress();
+}
+
+function renderLessonView() {
+  const lesson = LESSONS[currentLessonId];
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="lesson-card">
+      <span class="lesson-badge">Lesson ${lesson.id}</span>
+      <h2>${lesson.name}</h2>
+      <p style="color:#6b7280;font-weight:600;margin-bottom:8px;">${lesson.topic}</p>
+      <p class="lesson-desc">${lesson.description}</p>
+      <div style="background:#faf9ff;border-radius:16px;padding:16px 20px;margin-bottom:20px;border:1px solid #e0e7ff;">
+        <span style="font-weight:700;color:#4f46e5;">Example: </span>
+        <span style="font-size:1.3rem;font-weight:800;">${lesson.example}</span>
+      </div>
+      <button class="btn btn-primary" id="startChallengeBtn">Start Challenge</button>
+    </div>
+  `;
+  document.getElementById('startChallengeBtn').addEventListener('click', startChallenge);
+}
+
+/* ============================================================
+   11. NORMAL CHALLENGE
+   ============================================================ */
+function startChallenge() {
+  currentQuestion = LESSONS[currentLessonId].questionGenerator();
+  normalAttempts = 0;
+  normalAttemptTime = null;
+  renderChallengeView();
+  startTimer();
+}
+
+function renderChallengeView() {
+  const q = currentQuestion;
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="lesson-card">
+      <span class="lesson-badge">Lesson ${currentLessonId}</span>
+      <h2 style="margin-bottom:16px;">Normal Maths Challenge</h2>
+      <div class="timer-display" id="timerDisplay">0.00s</div>
+      <div class="question-display">${q.a} × ${q.b} = ?</div>
+      <div class="answer-row">
+        <input type="number" class="answer-input" id="normalAnswer" placeholder="Your answer" aria-label="Your answer">
+        <button class="btn btn-primary" id="submitNormalBtn">Submit Answer</button>
+      </div>
+      <div class="feedback" id="normalFeedback"></div>
+    </div>
+  `;
+
+  const input = document.getElementById('normalAnswer');
+  const submitBtn = document.getElementById('submitNormalBtn');
+  const feedback = document.getElementById('normalFeedback');
+
+  input.focus();
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); submitNormalAnswer(); }
+  });
+  submitBtn.addEventListener('click', submitNormalAnswer);
+
+  function submitNormalAnswer() {
+    const val = input.value.trim();
+    if (val === '') {
+      feedback.className = 'feedback error';
+      feedback.textContent = 'Please enter an answer.';
+      return;
+    }
+    const num = Number(val);
+    if (!Number.isInteger(num)) {
+      feedback.className = 'feedback error';
+      feedback.textContent = 'Please enter a valid whole number.';
+      return;
+    }
+
+    if (num === q.answer) {
+      stopTimer();
+      if (normalAttemptTime === null) normalAttemptTime = elapsedTime;
+      feedback.className = 'feedback success';
+      feedback.innerHTML = `✅ Correct! You solved it in <strong>${normalAttemptTime.toFixed(2)} seconds</strong>.<br>
+        <span style="font-size:.95rem;color:#4b5563;font-weight:500;">
+        The Vedic method can help you solve this type of question faster with practice.</span>`;
+      submitBtn.disabled = true;
+      input.disabled = true;
+
+      const learnBtn = document.createElement('button');
+      learnBtn.className = 'btn btn-success mt-16';
+      learnBtn.textContent = 'Learn Vedic Method';
+      learnBtn.addEventListener('click', () => {
+        vedicStepIndex = 0;
+        buildVedicSteps();
+        renderVedicLearnView();
+      });
+      feedback.appendChild(document.createElement('br'));
+      feedback.appendChild(learnBtn);
+
+    } else {
+      normalAttempts++;
+      if (normalAttempts >= 3) {
+        feedback.className = 'feedback hint';
+        feedback.textContent = `Not quite! Hint: the correct answer is ${q.answer}. Try again.`;
+      } else {
+        feedback.className = 'feedback error';
+        feedback.textContent = 'Not quite! Try again.';
+      }
+      input.select();
+    }
+  }
+}
+
+/* ============================================================
+   12. VEDIC LEARNING VIEW
+   ============================================================ */
+function buildVedicSteps() {
+  const q = currentQuestion;
+  vedicSteps = LESSONS[currentLessonId].stepBuilder(q.a, q.b, q.answer);
+}
+
+function renderVedicLearnView() {
+  const lesson = LESSONS[currentLessonId];
+  const q = currentQuestion;
+
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="lesson-card">
+      <span class="lesson-badge">Vedic Method · Lesson ${lesson.id}</span>
+      <h2 style="margin-bottom:4px;">${lesson.name}</h2>
+      <p style="color:#6b7280;font-weight:600;margin-bottom:12px;">${lesson.topic}</p>
+      <p style="color:#4b5563;margin-bottom:8px;">${lesson.description}</p>
+
+      <div class="steps-container" id="vedicStepsContainer"></div>
+
+      <div class="nav-steps">
+        <button class="btn btn-secondary" id="prevStepBtn">◀ Previous</button>
+        <span class="step-counter" id="stepCounter"></span>
+        <button class="btn btn-primary" id="nextStepBtn">Next ▶</button>
+        <button class="btn btn-success" id="showFullSolutionBtn" style="margin-left:auto;">Show Full Solution</button>
+      </div>
+
+      <div id="fullSolutionArea" class="mt-16"></div>
+
+      <div class="mt-24">
+        <button class="btn btn-primary" id="attemptVedicBtn" style="width:100%;">
+          I'm Ready — Solve ${q.a} × ${q.b} Using the Vedic Method
+        </button>
+      </div>
+    </div>
+  `;
+
+  renderVedicStep(0);
+
+  document.getElementById('prevStepBtn').addEventListener('click', () => {
+    if (vedicStepIndex > 0) { vedicStepIndex--; renderVedicStep(vedicStepIndex); }
+  });
+  document.getElementById('nextStepBtn').addEventListener('click', () => {
+    if (vedicStepIndex < vedicSteps.length - 1) { vedicStepIndex++; renderVedicStep(vedicStepIndex); }
+  });
+
+  document.getElementById('showFullSolutionBtn').addEventListener('click', () => {
+    document.getElementById('fullSolutionArea').innerHTML = `
+      <div class="step-card" style="background:#f0fdf4;border-color:#bbf7d0;">
+        <div class="step-counter">Answer</div>
+        <div style="text-align:center;font-size:2rem;font-weight:800;color:#065f46;padding:8px 0;">
+          ${q.a} × ${q.b} = ${q.answer}
+        </div>
+      </div>
+      <div class="full-steps">
+        ${vedicSteps.map((s, i) => `
+          <div class="step-card">
+            <div class="step-counter">Step ${i + 1}</div>
+            ${s}
+          </div>`).join('')}
+      </div>
+    `;
+  });
+
+  document.getElementById('attemptVedicBtn').addEventListener('click', () => {
+    vedicAttempts = 0;
+    vedicAttemptTime = null;
+    renderVedicChallengeView();
+    startTimer();
+  });
+}
+
+function renderVedicStep(index) {
+  const container = document.getElementById('vedicStepsContainer');
+  container.innerHTML = `<div class="step-card">${vedicSteps[index]}</div>`;
+  document.getElementById('stepCounter').textContent =
+    `Step ${index + 1} of ${vedicSteps.length}`;
+  document.getElementById('prevStepBtn').disabled = index === 0;
+  document.getElementById('nextStepBtn').disabled = index === vedicSteps.length - 1;
+}
+
+/* ============================================================
+   13. VEDIC CHALLENGE
+   ============================================================ */
+function renderVedicChallengeView() {
+  const q = currentQuestion;
+
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="lesson-card">
+      <span class="lesson-badge">Vedic Challenge · Lesson ${currentLessonId}</span>
+      <h2 style="margin-bottom:16px;">Solve Using the Vedic Method</h2>
+      <div class="timer-display" id="timerDisplay">0.00s</div>
+      <div class="question-display">${q.a} × ${q.b} = ?</div>
+      <div class="answer-row">
+        <input type="number" class="answer-input" id="vedicAnswer" placeholder="Your answer" aria-label="Your Vedic answer">
+        <button class="btn btn-success" id="submitVedicBtn">Submit Vedic Answer</button>
+      </div>
+      <div class="feedback" id="vedicFeedback"></div>
+    </div>
+  `;
+
+  const input = document.getElementById('vedicAnswer');
+  const submitBtn = document.getElementById('submitVedicBtn');
+  const feedback = document.getElementById('vedicFeedback');
+
+  input.focus();
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); submitVedicAnswer(); }
+  });
+  submitBtn.addEventListener('click', submitVedicAnswer);
+
+  function submitVedicAnswer() {
+    const val = input.value.trim();
+    if (val === '') {
+      feedback.className = 'feedback error';
+      feedback.textContent = 'Please enter an answer.';
+      return;
+    }
+    const num = Number(val);
+    if (!Number.isInteger(num)) {
+      feedback.className = 'feedback error';
+      feedback.textContent = 'Please enter a valid whole number.';
+      return;
+    }
+
+    if (num === q.answer) {
+      stopTimer();
+      if (vedicAttemptTime === null) vedicAttemptTime = elapsedTime;
+      feedback.className = 'feedback success';
+      feedback.innerHTML = `✅ Correct! You solved it in <strong>${vedicAttemptTime.toFixed(2)} seconds</strong>.`;
+      submitBtn.disabled = true;
+      input.disabled = true;
+
+      lessonCompleted[currentLessonId] = true;
+      saveCompletion();
+      renderSidebar();
+      updateProgress();
+
+      setTimeout(renderComparisonView, 800);
+
+    } else {
+      vedicAttempts++;
+      feedback.className = 'feedback error';
+      feedback.textContent = vedicAttempts >= 2
+        ? `Not quite! Hint: review the steps above. The answer is ${q.answer}. Try again.`
+        : 'Not quite! Try again.';
+      input.select();
+    }
+  }
+}
+
+/* ============================================================
+   14. COMPARISON
+   ============================================================ */
+function renderComparisonView() {
+  const q = currentQuestion;
+  const normalTime = normalAttemptTime !== null ? normalAttemptTime : 0;
+  const vedicTime  = vedicAttemptTime  !== null ? vedicAttemptTime  : 0;
+  const diff = normalTime - vedicTime;
+  const pctSaved = normalTime > 0 ? ((normalTime - vedicTime) / normalTime) * 100 : 0;
+
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="comparison-card">
+      <h2 style="margin-bottom:4px;">Speed Comparison</h2>
+      <p style="color:#6b7280;font-weight:600;margin-bottom:20px;">${q.a} × ${q.b} = ${q.answer}</p>
+
+      <div class="comparison-stats">
+        <div class="stat-box">
+          <div class="label">Normal Method</div>
+          <div class="value">${normalTime.toFixed(2)}s</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">Vedic Method</div>
+          <div class="value">${vedicTime.toFixed(2)}s</div>
+        </div>
+      </div>
+
+      <div class="bar-chart">
+        <div class="bar-row">
+          <span class="bar-label">Normal</span>
+          <div class="bar-bg">
+            <div class="bar-fill normal" style="width:${normalTime > 0 ? 100 : 0}%;">
+              ${normalTime > 0 ? normalTime.toFixed(2) + 's' : ''}
+            </div>
+          </div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Vedic</span>
+          <div class="bar-bg">
+            <div class="bar-fill vedic" style="width:${normalTime > 0 ? Math.min((vedicTime / normalTime) * 100, 100) : 0}%;">
+              ${vedicTime > 0 ? vedicTime.toFixed(2) + 's' : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="motivation">
+        ${diff > 0
+          ? `⚡ You saved ${diff.toFixed(2)} seconds (${pctSaved.toFixed(1)}% faster)! Keep practising.`
+          : diff === 0
+            ? '⏱️ Same time this round — keep practising and the Vedic route will pull ahead.'
+            : '🌱 The Vedic method took a bit longer this time. With practice it becomes second nature!'}
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="practiceAnotherBtn">Practice Another Question</button>
+        <button class="btn btn-secondary" id="backToLessonsBtn">Back to Lessons</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('practiceAnotherBtn').addEventListener('click', startChallenge);
+
+  document.getElementById('backToLessonsBtn').addEventListener('click', () => {
+    normalAttemptTime = null;
+    vedicAttemptTime = null;
+    normalAttempts = 0;
+    vedicAttempts = 0;
+    renderLessonView();
+    updateProgress();
+  });
+}
+
+/* ============================================================
+   15. INIT
+   ============================================================ */
+function init() {
+  loadCompletion();
+  renderSidebar();
+  renderLessonView();
+  updateProgress();
+}
+
+init();
+</script>
+</body>
+</html>
